@@ -5,46 +5,315 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Моя Система</title>
   <style>
-    body { font-family: Arial, sans-serif; background: #f4f1ea; color: #333; padding: 20px; }
-    h1 { color: #b5838d; }
-    .section { background: white; padding: 15px; margin: 10px 0; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-    .section h2 { margin-top: 0; color: #b5838d; }
-    ul { list-style: none; padding: 0; }
-    li { padding: 8px 0; border-bottom: 1px solid #eee; }
-    .done { text-decoration: line-through; color: #aaa; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+      background: #f4f1ea; 
+      color: #333; 
+      padding: 15px; 
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    h1 { color: #b5838d; text-align: center; margin: 15px 0 20px; font-size: 24px; }
+    
+    /* Вкладки */
+    .tabs { 
+      display: flex; 
+      gap: 8px; 
+      margin-bottom: 20px; 
+      overflow-x: auto;
+      padding-bottom: 5px;
+    }
+    .tab {
+      flex: 1;
+      padding: 12px 10px;
+      background: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #888;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+      min-width: 80px;
+    }
+    .tab.active {
+      background: #b5838d;
+      color: white;
+      box-shadow: 0 4px 10px rgba(181, 131, 141, 0.4);
+    }
+    
+    /* Контент */
+    .panel { display: none; }
+    .panel.active { display: block; }
+    
+    .card { 
+      background: white; 
+      padding: 15px; 
+      border-radius: 12px; 
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06); 
+      margin-bottom: 15px;
+    }
+    .card h2 { 
+      margin-bottom: 12px; 
+      color: #b5838d; 
+      font-size: 18px;
+    }
+    
+    /* Форма добавления */
+    .add-form {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 15px;
+    }
+    .add-form input {
+      flex: 1;
+      padding: 10px 12px;
+      border: 2px solid #eee;
+      border-radius: 10px;
+      font-size: 14px;
+      outline: none;
+      transition: border 0.2s;
+    }
+    .add-form input:focus { border-color: #b5838d; }
+    .add-form button {
+      padding: 10px 16px;
+      background: #b5838d;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .add-form button:hover { background: #a06c76; }
+    
+    /* Список задач */
+    ul { list-style: none; }
+    li {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 5px;
+      border-bottom: 1px solid #f0f0f0;
+      font-size: 15px;
+      cursor: pointer;
+      transition: background 0.15s;
+      border-radius: 6px;
+    }
+    li:hover { background: #faf8f5; }
+    li:last-child { border-bottom: none; }
+    li.done span { text-decoration: line-through; color: #bbb; }
+    li span { flex: 1; }
+    .delete-btn {
+      background: none;
+      border: none;
+      color: #ddd;
+      font-size: 20px;
+      cursor: pointer;
+      padding: 0 8px;
+      transition: color 0.2s;
+    }
+    .delete-btn:hover { color: #e74c3c; }
+    
+    /* Финансы */
+    .finance-summary {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px;
+      background: #f4f1ea;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+    .finance-summary span:last-child { color: #b5838d; }
   </style>
 </head>
 <body>
   <h1>🌸 Моя Система</h1>
-  
-  <div class="section">
-    <h2>📚 Учеба</h2>
-    <ul id="study-list">
-      <li>Курсовая работа — дедлайн 25.10</li>
-      <li>Домашка по матану — дедлайн 30.09</li>
-    </ul>
+
+  <!-- Вкладки -->
+  <div class="tabs">
+    <button class="tab active" data-tab="study">📚 Учеба</button>
+    <button class="tab" data-tab="teach">👩‍🏫 Уроки</button>
+    <button class="tab" data-tab="wb">📦 WB</button>
+    <button class="tab" data-tab="finance">💰 Финансы</button>
   </div>
 
-  <div class="section">
-    <h2>👩‍🏫 Преподавание</h2>
-    <ul id="teach-list">
-      <li>Маша — 15:00, тема: дроби</li>
-      <li>Петя — 17:00, тема: уравнения</li>
-    </ul>
+  <!-- Учеба -->
+  <div class="panel active" id="study">
+    <div class="card">
+      <h2>Задания</h2>
+      <div class="add-form">
+        <input type="text" id="study-input" placeholder="Новое задание...">
+        <button onclick="addItem('study')">+</button>
+      </div>
+      <ul id="study-list"></ul>
+    </div>
   </div>
 
-  <div class="section">
-    <h2>📦 WB (Карточки)</h2>
-    <ul id="wb-list">
-      <li>Поставка №1 — в пути</li>
-    </ul>
+  <!-- Преподавание -->
+  <div class="panel" id="teach">
+    <div class="card">
+      <h2>Мои уроки</h2>
+      <div class="add-form">
+        <input type="text" id="teach-input" placeholder="Ученик и тема...">
+        <button onclick="addItem('teach')">+</button>
+      </div>
+      <ul id="teach-list"></ul>
+    </div>
   </div>
 
-  <div class="section">
-    <h2>💰 Финансы</h2>
-    <ul id="finance-list">
-      <li>Накоплено: 5000 ₽ / Цель: 50000 ₽</li>
-    </ul>
+  <!-- WB -->
+  <div class="panel" id="wb">
+    <div class="card">
+      <h2>Карточки</h2>
+      <div class="add-form">
+        <input type="text" id="wb-input" placeholder="Товар или артикул...">
+        <button onclick="addItem('wb')">+</button>
+      </div>
+      <ul id="wb-list"></ul>
+    </div>
   </div>
+
+  <!-- Финансы -->
+  <div class="panel" id="finance">
+    <div class="card">
+      <h2>Копилка</h2>
+      <div class="finance-summary">
+        <span>Накоплено:</span>
+        <span id="finance-total">0 ₽</span>
+      </div>
+      <div class="add-form">
+        <input type="text" id="finance-input" placeholder="Сумма (например: 1000)">
+        <button onclick="addItem('finance')">+</button>
+      </div>
+      <ul id="finance-list"></ul>
+    </div>
+  </div>
+
+  <script>
+    // === ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК ===
+    const tabs = document.querySelectorAll('.tab');
+    const panels = document.querySelectorAll('.panel');
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        panels.forEach(p => p.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById(tab.dataset.tab).classList.add('active');
+      });
+    });
+
+    // === ДАННЫЕ И СОХРАНЕНИЕ ===
+    const STORAGE_KEY = 'my-planner-data';
+    let data = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
+      study: [],
+      teach: [],
+      wb: [],
+      finance: []
+    };
+
+    function saveData() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+
+    // === ДОБАВЛЕНИЕ ЭЛЕМЕНТА ===
+    function addItem(type) {
+      const input = document.getElementById(type + '-input');
+      const text = input.value.trim();
+      if (!text) return;
+      
+      data[type].push({ text: text, done: false });
+      input.value = '';
+      saveData();
+      renderAll();
+    }
+
+    // === УДАЛЕНИЕ ===
+    function deleteItem(type, index) {
+      data[type].splice(index, 1);
+      saveData();
+      renderAll();
+    }
+
+    // === ОТМЕТКА ВЫПОЛНЕНИЯ ===
+    function toggleItem(type, index) {
+      data[type][index].done = !data[type][index].done;
+      saveData();
+      renderAll();
+    }
+
+    // === ОТРИСОВКА СПИСКОВ ===
+    function renderList(type) {
+      const list = document.getElementById(type + '-list');
+      list.innerHTML = '';
+      data[type].forEach((item, index) => {
+        const li = document.createElement('li');
+        if (item.done) li.classList.add('done');
+        
+        const span = document.createElement('span');
+        span.textContent = item.text;
+        span.onclick = () => toggleItem(type, index);
+        
+        const btn = document.createElement('button');
+        btn.className = 'delete-btn';
+        btn.textContent = '×';
+        btn.onclick = (e) => { e.stopPropagation(); deleteItem(type, index); };
+        
+        li.appendChild(span);
+        li.appendChild(btn);
+        list.appendChild(li);
+      });
+    }
+
+    // === ОСОБАЯ ОТРИСОВКА ФИНАНСОВ ===
+    function renderFinance() {
+      const list = document.getElementById('finance-list');
+      list.innerHTML = '';
+      let total = 0;
+      data.finance.forEach((item, index) => {
+        const num = parseFloat(item.text.replace(/[^\d.-]/g, '')) || 0;
+        total += num;
+        
+        const li = document.createElement('li');
+        if (item.done) li.classList.add('done');
+        
+        const span = document.createElement('span');
+        span.textContent = item.text + ' ₽';
+        span.onclick = () => toggleItem('finance', index);
+        
+        const btn = document.createElement('button');
+        btn.className = 'delete-btn';
+        btn.textContent = '×';
+        btn.onclick = (e) => { e.stopPropagation(); deleteItem('finance', index); };
+        
+        li.appendChild(span);
+        li.appendChild(btn);
+        list.appendChild(li);
+      });
+      document.getElementById('finance-total').textContent = total.toLocaleString('ru-RU') + ' ₽';
+    }
+
+    // === ОБЩАЯ ОТРИСОВКА ===
+    function renderAll() {
+      renderList('study');
+      renderList('teach');
+      renderList('wb');
+      renderFinance();
+    }
+
+    // === СТАРТ ===
+    renderAll();
+
+    // === ENTER ДЛЯ ДОБАВЛЕНИЯ ===
+    ['study', 'teach', 'wb', 'finance'].forEach(type => {
+      document.getElementById(type + '-input').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') addItem(type);
+      });
+    });
+  </script>
 </body>
 </html>
